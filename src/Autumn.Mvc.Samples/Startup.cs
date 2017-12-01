@@ -1,12 +1,14 @@
 ﻿using System;
 using Autumn.Mvc.Samples.Models;
 using Autumn.Mvc.Samples.Models.Generators;
+using Autumn.Mvc.Samples.Swagger;
 using Foundation.ObjectHydrator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Autumn.Mvc.Samples
 {
@@ -32,17 +34,22 @@ namespace Autumn.Mvc.Samples
                 .With(x => x.Active, new ActiveGenerator());
             var customers = customerHydrator.GetList(1000);
             services.AddSingleton(customers);
-            
-            
+
+
             // autumn.mvc configuration
             services
-                .AddAutumn(options=>
+                .AddAutumn(options =>
                     options
                         // ?query=  Query => query ( snake_case )
-                        .QueryFieldName("Query")
+                        .QueryFieldName("Search")
                         // snake_case
                         .NamingStrategy(new SnakeCaseNamingStrategy())
                         .HostingEnvironment(HostingEnvironment))
+                .AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info {Title = "api", Version = "v1"});
+                    c.OperationFilter<SwaggerOperationFilter>();
+                })
                 .AddMvc();
         }
 
@@ -54,7 +61,15 @@ namespace Autumn.Mvc.Samples
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseAutumn()
+                .UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint(string.Format("/swagger/{0}/swagger.json", "v1"),
+                        string.Format("API {0}", "v1"));
+
+                })
+                .UseMvc();
         }
     }
 }

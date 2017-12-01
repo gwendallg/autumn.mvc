@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace Autumn.Mvc.Data.Models
+namespace Autumn.Mvc.Models
 {
-    public class AutumnErrorModel
+    public class ErrorModel
     {
         public string Message { get; set; }
         public DateTime Timestamp { get; set; }
         public string Origin { get; set; }
         public string StackTrace { get; set; }
 
-        public AutumnErrorModel()
+        public ErrorModel()
         {
-            Timestamp=DateTime.UtcNow;
+            Timestamp = DateTime.UtcNow;
         }
     }
 }
