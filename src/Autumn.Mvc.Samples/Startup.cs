@@ -12,12 +12,14 @@ namespace Autumn.Mvc.Samples
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration,IHostingEnvironment hostingEnvironment)
         {
             Configuration = configuration;
+            HostingEnvironment = hostingEnvironment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get;}
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -39,14 +41,15 @@ namespace Autumn.Mvc.Samples
                         // ?query=  Query => query ( snake_case )
                         .QueryFieldName("Query")
                         // snake_case
-                        .NamingStrategy(new SnakeCaseNamingStrategy()))
+                        .NamingStrategy(new SnakeCaseNamingStrategy())
+                        .HostingEnvironment(HostingEnvironment))
                 .AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (HostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }

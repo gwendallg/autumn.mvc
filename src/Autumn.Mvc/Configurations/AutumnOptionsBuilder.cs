@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Autumn.Mvc.Configurations.Exceptions;
+using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Serialization;
 
 namespace Autumn.Mvc.Configurations
@@ -9,7 +10,7 @@ namespace Autumn.Mvc.Configurations
     public class AutumnOptionsBuilder
     {
 
-        private readonly AutumnOptions _autumnSettings;
+        private readonly AutumnOptions _autumnOptions;
         private readonly Dictionary<string, string> _fieldNames=new Dictionary<string, string>();
 
         private void CkeckAndRegisterFieldName(string value, string fieldName)
@@ -32,7 +33,7 @@ namespace Autumn.Mvc.Configurations
         /// </summary>
         public AutumnOptionsBuilder()
         {
-            _autumnSettings = new AutumnOptions();
+            _autumnOptions = new AutumnOptions();
         }
 
         /// <summary>
@@ -43,21 +44,21 @@ namespace Autumn.Mvc.Configurations
         {
             if (_fieldNames.ContainsKey("PageNumberFieldName"))
             {
-                _autumnSettings.PageNumberFieldName = _fieldNames["PageNumberFieldName"];
+                _autumnOptions.PageNumberFieldName = _fieldNames["PageNumberFieldName"];
             }
             if (_fieldNames.ContainsKey("PageSizeFieldName"))
             {
-                _autumnSettings.PageSizeFieldName = _fieldNames["PageSizeFieldName"];
+                _autumnOptions.PageSizeFieldName = _fieldNames["PageSizeFieldName"];
             }
             if (_fieldNames.ContainsKey("SortFieldName"))
             {
-                _autumnSettings.SortFieldName = _fieldNames["SortFieldName"];
+                _autumnOptions.SortFieldName = _fieldNames["SortFieldName"];
             }
             if (_fieldNames.ContainsKey("QueryFieldName"))
             {
-                _autumnSettings.QueryFieldName = _fieldNames["QueryFieldName"];
+                _autumnOptions.QueryFieldName = _fieldNames["QueryFieldName"];
             }
-            return _autumnSettings;
+            return _autumnOptions;
         }
        
         /// <summary>
@@ -122,7 +123,23 @@ namespace Autumn.Mvc.Configurations
             {
                 throw new ArgumentNullException(nameof(namingStrategy));
             }
-            _autumnSettings.NamingStrategy = namingStrategy;
+            _autumnOptions.NamingStrategy = namingStrategy;
+            return this;
+        }
+
+        /// <summary>
+        /// configuration of hosting Environment
+        /// </summary>
+        /// <param name="hostingEnvironment"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public AutumnOptionsBuilder HostingEnvironment(IHostingEnvironment hostingEnvironment)
+        {
+            if (hostingEnvironment==null)
+            {
+                throw new ArgumentNullException(nameof(hostingEnvironment));
+            }
+            _autumnOptions.HostingEnvironment = hostingEnvironment;
             return this;
         }
     }

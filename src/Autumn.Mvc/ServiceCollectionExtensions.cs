@@ -3,6 +3,7 @@ using Autumn.Mvc.Configurations;
 using Autumn.Mvc.Models.Paginations;
 using Autumn.Mvc.Models.Queries;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Autumn.Mvc
@@ -35,10 +36,16 @@ namespace Autumn.Mvc
                 c.ModelBinderProviders.Insert(1,
                     new QueryModelBinderProvider());
             });
-
             var contractResolver =
-                new DefaultContractResolver() {NamingStrategy = AutumnApplication.Current.NamingStrategy};
-            mvcBuilder.AddJsonOptions(o => { o.SerializerSettings.ContractResolver = contractResolver; });
+                new DefaultContractResolver() { NamingStrategy = AutumnApplication.Current.NamingStrategy};
+            mvcBuilder.AddJsonOptions(o =>
+            {
+                o.SerializerSettings.ContractResolver = contractResolver;
+                if (settings.HostingEnvironment?.EnvironmentName == "Developement")
+                {
+                    o.SerializerSettings.Formatting = Formatting.Indented;
+                }
+            });
 
             return services;
         }

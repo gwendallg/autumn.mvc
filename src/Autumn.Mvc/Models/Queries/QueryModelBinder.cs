@@ -65,9 +65,9 @@ namespace Autumn.Mvc.Models.Queries
             var lexer = new QueryLexer(antlrInputStream);
             var commonTokenStream = new CommonTokenStream(lexer);
             var parser = new QueryParser(commonTokenStream);
-            var eval = parser.eval();
+            var eval = parser.or();
             var visitor = new DefaultQueryVisitor<T>(AutumnApplication.Current.NamingStrategy);
-            return visitor.VisitEval(eval);
+            return visitor.VisitOr(eval);
         }
     }
 }

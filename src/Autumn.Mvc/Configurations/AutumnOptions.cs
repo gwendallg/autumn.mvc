@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Serialization;
 
 namespace Autumn.Mvc.Configurations
@@ -11,5 +12,6 @@ namespace Autumn.Mvc.Configurations
         public string QueryFieldName { get; set; }
         public int DefaultPageSize { get; set; }
         public NamingStrategy NamingStrategy { get; set; }
+        public IHostingEnvironment HostingEnvironment { get; set; }
     }
 }
