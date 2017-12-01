@@ -20,8 +20,8 @@ namespace Autumn.Mvc.Samples.Controllers
         }
 
         [HttpGet]
-        public AutumnPage<Customer> Get(Expression<Func<Customer, bool>> filter,
-            AutumnPageable<Customer> pageable)
+        public IPage<Customer> Get(Expression<Func<Customer, bool>> filter,
+            IPageable<Customer> pageable)
         {
 
             var content = _customers
@@ -33,8 +33,8 @@ namespace Autumn.Mvc.Samples.Controllers
                     .Where(filter);
             }
 
-            if (pageable == null) return new AutumnPage<Customer>(content.ToList(), pageable, _customers.Count);
-            
+            if (pageable == null) return new Page<Customer>(content.ToList());
+
             if (pageable.Sort?.OrderBy?.Count() > 0)
             {
                 content = pageable.Sort.OrderBy.Aggregate(content, (current, order) => current.OrderBy(order));
@@ -46,9 +46,10 @@ namespace Autumn.Mvc.Samples.Controllers
             }
             var offset = pageable.PageNumber * pageable.PageSize;
             var limit = pageable.PageSize;
+            var count = content.Count();
             content = content.Skip(offset)
                 .Take(limit);
-            return new AutumnPage<Customer>(content.ToList(), pageable, _customers.Count);
+            return new Page<Customer>(content.ToList(), pageable, count);
         }
     }
 }

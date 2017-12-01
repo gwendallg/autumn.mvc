@@ -16,13 +16,13 @@ namespace Autumn.Mvc.Configurations
         {
             if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException(nameof(value));
             if (Regex.Match(value, @"(_)?([A-Za-z0-9]((_)?[A-Za-z0-9])*(_)?)").Value!=value)
-                throw new AutumnInvalidFormatFieldNameException(fieldName,value);
+                throw new InvalidFormatFieldNameException(fieldName,value);
             var check = value.Trim();
             foreach (var item in _fieldNames.Keys)
             {
                 if (item == fieldName) continue;
                 if (_fieldNames[item].ToLowerInvariant() == check)
-                    throw new AutumnAlreadyFieldNameUsedException(item, value);
+                    throw new AlreadyFieldNameUsedException(item, value);
             }
             _fieldNames[fieldName] = value.Trim();
         }

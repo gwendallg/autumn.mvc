@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Autumn.Mvc.Configurations;
+﻿using Autumn.Mvc.Configurations;
 using Newtonsoft.Json.Serialization;
 
 namespace Autumn.Mvc
@@ -43,13 +42,17 @@ namespace Autumn.Mvc
                     ? CDefaultPageSize
                     : autumnOptions.DefaultPageSize;
                 Current.PageSizeFieldName =
-                    (autumnOptions.PageSizeFieldName ?? CDefaultPageSizeFieldName).ToCase(Current.NamingStrategy);
+                    Current.NamingStrategy.GetPropertyName(
+                        (autumnOptions.PageSizeFieldName ?? CDefaultPageSizeFieldName), false);
                 Current.PageNumberFieldName =
-                    (autumnOptions.PageNumberFieldName ?? CDefaultPageNumberFieldName).ToCase(Current.NamingStrategy);
+                    Current.NamingStrategy.GetPropertyName(
+                        (autumnOptions.PageNumberFieldName ?? CDefaultPageNumberFieldName), false);
                 Current.SortFieldName =
-                    (autumnOptions.SortFieldName ?? CDefaultSortFieldName).ToCase(Current.NamingStrategy);
+                    Current.NamingStrategy.GetPropertyName((autumnOptions.SortFieldName ?? CDefaultSortFieldName),
+                        false);
                 Current.QueryFieldName =
-                    (autumnOptions.QueryFieldName ?? CDefaultQueryFieldName).ToCase(Current.NamingStrategy);
+                    Current.NamingStrategy.GetPropertyName((autumnOptions.QueryFieldName ?? CDefaultQueryFieldName),
+                        false);
             }
         }
     }
