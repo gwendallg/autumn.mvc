@@ -20,7 +20,6 @@ namespace Autumn.Mvc.Models.Queries
         public static readonly MemoryCache QueriesCache =
             new MemoryCache(new MemoryCacheOptions() {ExpirationScanFrequency = TimeSpan.FromMinutes(5)});
 
-
         #region GetExpression 
 
         /// <summary>

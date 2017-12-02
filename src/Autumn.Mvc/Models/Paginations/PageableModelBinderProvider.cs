@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using System;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Autumn.Mvc.Models.Paginations
 {
@@ -8,7 +9,9 @@ namespace Autumn.Mvc.Models.Paginations
         {
             if (!context.Metadata.ModelType.IsGenericType ||
                 context.Metadata.ModelType.GetGenericTypeDefinition() != typeof(IPageable<>)) return null;
-            return ModelHelper.GetPageableModelBinder(context.Metadata.ModelType);
+            var entityType = context.Metadata.ModelType.GetGenericArguments()[0];
+            var modelbinderType = typeof(PageableModelBinder<>).MakeGenericType(entityType);
+            return (IModelBinder) Activator.CreateInstance(modelbinderType);
         }
     }
 }
