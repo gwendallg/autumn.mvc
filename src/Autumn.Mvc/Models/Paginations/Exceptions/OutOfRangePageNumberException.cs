@@ -1,12 +1,11 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Autumn.Mvc.Models.Paginations.Exceptions
 {
     public class OutOfRangePageNumberException : PageableException
     {
-        public OutOfRangePageNumberException(ModelBindingContext origin,int pageNumber,
-            Exception innerException = null) : base(origin,
+        public OutOfRangePageNumberException(int pageNumber,
+            Exception innerException = null) : base(
             string.Format("Out of range page number  : {0}", pageNumber), innerException)
         {
         }

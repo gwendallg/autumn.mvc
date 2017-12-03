@@ -14,10 +14,12 @@ os:
 script:
   - dotnet restore ./src/Autumn.Mvc.sln
   - dotnet build --configuration Release ./src/Autumn.Mvc.sln
+  - dotnet test --configuration Release --no-build ./src/Autumn.Mvc.Tests/Autumn.Mvc.Tests.csproj
+
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY $NUGET_SOURCE 1.0.0
+    script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY $NUGET_SOURCE 0.0.1
     on:
       branch: master	

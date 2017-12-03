@@ -1,9 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>3021</NoWarn>
+    <PackageId>Autumn.Mvc</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Gwendal Garnier</Authors>
+    <PackageLicenseUrl>https://github.com/gwendallg/autumn.mvc/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/gwendallg/autumn.mvc</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/gwendallg/autumn.mvc/blob/master/logo64.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/gwendallg/autumn.mvc</RepositoryUrl>
+    <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
+    <Title>REST Query Language Inspired by Spring data querydsl.</Title>
+    <Description>Autumn.Mvc is aspNet Core extension that will make it easier for you to write your REST APIs. Its purpose is to convert a query in RSQL format to lamba expression. Install it and test it!</Description>
+    <Copyright>Copyright © G.Garnier 2017</Copyright>
+    <PackageTags>Rsql Querydsl API Rest</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.6.0" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.0.0" />
   </ItemGroup>

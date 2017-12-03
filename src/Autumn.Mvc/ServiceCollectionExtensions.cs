@@ -17,27 +17,30 @@ namespace Autumn.Mvc
         /// <param name="services"></param>
         /// <param name="autumnOptionsAction"></param>
         public static IServiceCollection AddAutumn(this IServiceCollection services,
-            Action<AutumnOptionsBuilder> autumnOptionsAction = null)
+            Action<AutumnSettingsBuilder> autumnOptionsAction = null)
         {
 
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
           
-            var autumnConfigurationBuilder = new AutumnOptionsBuilder();
+            var autumnConfigurationBuilder = new AutumnSettingsBuilder();
             autumnOptionsAction?.Invoke(autumnConfigurationBuilder);
             var settings = autumnConfigurationBuilder.Build();
-            
-            AutumnApplication.Initialize(settings);
+            services.AddSingleton(settings);
             
             var mvcBuilder = services.AddMvc(c =>
             {
                 c.ModelBinderProviders.Insert(0,
-                    new PageableModelBinderProvider());
+                    new PageableModelBinderProvider(settings));
                 c.ModelBinderProviders.Insert(1,
-                    new QueryModelBinderProvider());
+                    new QueryModelBinderProvider(settings));
             });
+
+           
+
+            if (settings.NamingStrategy == null) return services;
             var contractResolver =
-                new DefaultContractResolver() { NamingStrategy = AutumnApplication.Current.NamingStrategy};
+                new DefaultContractResolver() {NamingStrategy = settings.NamingStrategy};
             mvcBuilder.AddJsonOptions(o =>
             {
                 o.SerializerSettings.ContractResolver = contractResolver;

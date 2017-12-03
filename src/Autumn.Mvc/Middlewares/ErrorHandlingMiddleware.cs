@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Autumn.Mvc.Configurations;
 using Autumn.Mvc.Models;
 using Autumn.Mvc.Models.Queries.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -11,12 +12,17 @@ namespace Autumn.Mvc.Middlewares
 {
     public class ErrorHandlingMiddleware
     {
-        private static readonly JsonSerializerSettings JsonSerializerSettings;
         private readonly RequestDelegate _next;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
-        public ErrorHandlingMiddleware(RequestDelegate next)
+        public ErrorHandlingMiddleware(RequestDelegate next, AutumnSettings autumnSettings)
         {
             _next = next;
+            _jsonSerializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver =
+                    new DefaultContractResolver() {NamingStrategy = autumnSettings.NamingStrategy}
+            };
         }
 
         public async Task Invoke(HttpContext context)
@@ -27,29 +33,15 @@ namespace Autumn.Mvc.Middlewares
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex);
+                var result = new ErrorModel() {Message = ex.Message, StackTrace = ex.StackTrace};
+                if (ex is QueryComparisonException comparisonException)
+                {
+                    result.Origin = comparisonException.Origin.GetText();
+                }
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(result, _jsonSerializerSettings));
             }
-        }
-
-        static ErrorHandlingMiddleware()
-        {
-            JsonSerializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver =
-                    new DefaultContractResolver() { NamingStrategy = AutumnApplication.Current.NamingStrategy }
-            };
-        }
-
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
-        {
-            var result = new ErrorModel() {Message = exception.Message, StackTrace = exception.StackTrace};
-            if (exception is QueryComparisonException comparisonException)
-            {
-                result.Origin = comparisonException.Origin.GetText();
-            }
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-            return context.Response.WriteAsync(JsonConvert.SerializeObject(result, JsonSerializerSettings));
         }
     }
 }
