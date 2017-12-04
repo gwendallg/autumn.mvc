@@ -23,7 +23,10 @@ namespace Autumn.Mvc.Samples.Models
         public string Username { get; set; }
 
         public string Website { get; set; }
-        
-        
+
+        public double Debit { get; set; }
+
+        public double Credit { get; set; }
+
     }
 }

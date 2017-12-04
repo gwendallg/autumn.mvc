@@ -128,6 +128,13 @@ namespace Autumn.Mvc.Models.Queries
             CheckUniqueValue(context);
             var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
             var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            if (value is ExpressionValue)
+            {
+                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                {
+                    throw new QueryComparisonInvalidMatchTypeException(context);
+                }
+            }
 
             if (expressionValue.Property.PropertyType != typeof(string) || value is ExpressionValue)
                 return Expression.Lambda<Func<T, bool>>(Expression.Equal(
@@ -177,7 +184,7 @@ namespace Autumn.Mvc.Models.Queries
         /// <returns></returns>
         public static Expression<Func<T, bool>> GetLtExpression<T>(ParameterExpression parameter,
             QueryParser.ComparisonContext context,
-            NamingStrategy namingStrategy=null)
+            NamingStrategy namingStrategy = null)
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
@@ -191,14 +198,19 @@ namespace Autumn.Mvc.Models.Queries
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
-
-            var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
-            if (values == null || values.Count == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
-            if (values.Count > 1) throw new QueryComparisonTooManyArgumentException(context);
-
+            CheckUniqueValue(context);
+            var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
+            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            if (value is ExpressionValue)
+            {
+                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                {
+                    throw new QueryComparisonInvalidMatchTypeException(context);
+                }
+            }
             return Expression.Lambda<Func<T, bool>>(Expression.LessThan(
                 expressionValue.Expression,
-                Expression.Constant(values[0], expressionValue.Property.PropertyType)), parameter);
+                expression), parameter);
         }
 
         /// <summary>
@@ -213,7 +225,7 @@ namespace Autumn.Mvc.Models.Queries
         /// <returns></returns>
         public static Expression<Func<T, bool>> GetLeExpression<T>(ParameterExpression parameter,
             QueryParser.ComparisonContext context,
-            NamingStrategy namingStrategy=null)
+            NamingStrategy namingStrategy = null)
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
@@ -222,19 +234,25 @@ namespace Autumn.Mvc.Models.Queries
             if (expressionValue.Property.PropertyType == typeof(string) ||
                 expressionValue.Property.PropertyType == typeof(bool) ||
                 expressionValue.Property.PropertyType == typeof(char) ||
-                expressionValue.Property.PropertyType == typeof(char?)||
+                expressionValue.Property.PropertyType == typeof(char?) ||
                 expressionValue.Property.PropertyType == typeof(bool?))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
-
-            var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
-            if (values == null || values.Count == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
-            if (values.Count > 1) throw new QueryComparisonTooManyArgumentException(context);
+            CheckUniqueValue(context);
+            var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
+            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            if (value is ExpressionValue)
+            {
+                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                {
+                    throw new QueryComparisonInvalidMatchTypeException(context);
+                }
+            }
 
             return Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(
                 expressionValue.Expression,
-                Expression.Constant(values[0], expressionValue.Property.PropertyType)), parameter);
+                expression), parameter);
         }
 
         /// <summary>
@@ -261,13 +279,20 @@ namespace Autumn.Mvc.Models.Queries
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
-            var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
-            if (values == null || values.Count == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
-            if (values.Count > 1) throw new QueryComparisonTooManyArgumentException(context);
+            CheckUniqueValue(context);
+            var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
+            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            if (value is ExpressionValue)
+            {
+                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                {
+                    throw new QueryComparisonInvalidMatchTypeException(context);
+                }
+            }
 
             return Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(
                 expressionValue.Expression,
-                Expression.Constant(values[0], expressionValue.Property.PropertyType)), parameter);
+                expression), parameter);
         }
         
         /// <summary>
@@ -294,13 +319,20 @@ namespace Autumn.Mvc.Models.Queries
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
-            var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
-            if (values == null || values.Count == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
-            if (values.Count > 1) throw new QueryComparisonTooManyArgumentException(context);
+            CheckUniqueValue(context);
+            var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
+            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            if (value is ExpressionValue)
+            {
+                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                {
+                    throw new QueryComparisonInvalidMatchTypeException(context);
+                }
+            }
 
             return Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(
                 expressionValue.Expression,
-                Expression.Constant(values[0], expressionValue.Property.PropertyType)), parameter);
+                expression), parameter);
         }
 
         /// <summary>

@@ -43,12 +43,6 @@ namespace Autumn.Mvc.Samples.Swagger
             var entityType = typeof(Customer);
             var entitySchemaGet = GetOrRegistrySchema(entityType, HttpMethod.Get, _autumnSettings.NamingStrategy);
             operation.Responses = new ConcurrentDictionary<string, Response>();
-            // add generic reponse for internal error from server
-            operation.Responses.Add(((int) HttpStatusCode.InternalServerError).ToString(),
-                new Response()
-                {
-                    Schema = GetOrRegistrySchema(typeof(ErrorModel), HttpMethod.Get, _autumnSettings.NamingStrategy)
-                });
             operation.Consumes.Clear();
             if (actionDescriptor.ActionName != "Get") return;
             var genericPageType = typeof(Page<>);
