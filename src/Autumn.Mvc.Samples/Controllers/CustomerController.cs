@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using Autumn.Mvc.Models.Paginations;
 using Autumn.Mvc.Samples.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Autumn.Mvc.Samples.Controllers
 {
@@ -23,7 +24,7 @@ namespace Autumn.Mvc.Samples.Controllers
         public IPage<Customer> Get(Expression<Func<Customer, bool>> filter,
             IPageable<Customer> pageable)
         {
-
+            if (!ModelState.IsValid) return null;
             var content = _customers
                 .AsQueryable();
 

@@ -103,10 +103,18 @@ namespace Autumn.Mvc.Models.Paginations
             }
             return new Pageable<T>(pageNumber, pageSize, sort);
         }
-        
+
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            bindingContext.Result = ModelBindingResult.Success(Build(bindingContext.ActionContext.HttpContext.Request.Query));
+            try
+            {
+                bindingContext.Result =
+                    ModelBindingResult.Success(Build(bindingContext.ActionContext.HttpContext.Request.Query));
+            }
+            catch (Exception e)
+            {
+                bindingContext.ModelState.AddModelError(GetType().FullName, e.Message);
+            }
             return Task.CompletedTask;
         }
     }
