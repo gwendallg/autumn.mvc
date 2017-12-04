@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace Autumn.Mvc.Models.Queries
 {
@@ -141,7 +143,31 @@ namespace Autumn.Mvc.Models.Queries
             }
             return items;
         }
-        
+
+
+        public static object GetValue<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ComparisonContext context,
+            NamingStrategy namingStrategy = null)
+        {
+            if (expressionValue.Property.PropertyType == typeof(string))
+            {
+                return GetString<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+            }
+            return null;
+        }
+
+        private static object GetString<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+            NamingStrategy namingStrategy = null)
+        {
+            if (valueContext.single_quote() != null || valueContext.double_quote() != null)
+            {
+                var replace = valueContext.single_quote() != null ? "'" : "\"";
+                var value = valueContext.GetText();
+                if (value.Length == 2) return string.Empty;
+                return value.Substring(1, value.Length - 2).Replace("\\" + replace, replace);
+            }
+            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+        }
+      
         public static List<object> GetValues(Type type, QueryParser.ArgumentsContext argumentsContext)
         {
             if (argumentsContext?.value() == null || argumentsContext.value().Length == 0) return null;

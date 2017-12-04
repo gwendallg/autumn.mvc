@@ -61,7 +61,7 @@ namespace Autumn.Mvc.Samples
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseAutumn()
+            app
                 .UseSwagger()
                 .UseSwaggerUI(c =>
                 {

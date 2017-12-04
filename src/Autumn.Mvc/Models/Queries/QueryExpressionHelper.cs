@@ -9,7 +9,6 @@ namespace Autumn.Mvc.Models.Queries
 {
     public static class QueryExpressionHelper
     {
-       
         private static readonly string MaskLk = string.Format("[{0}]", Guid.NewGuid().ToString());
         
         public static Expression<Func<T, bool>> True<T>()
@@ -32,8 +31,8 @@ namespace Autumn.Mvc.Models.Queries
         public static Expression<Func<T, bool>> GetAndExpression<T>(
             IQueryVisitor<Expression<Func<T, bool>>> visitor, QueryParser.AndContext context)
         {
-            if (visitor == null) throw new ArgumentException("visitor");
-            if (context == null) throw new ArgumentException("context");
+            if (visitor == null) throw new ArgumentException(nameof(visitor));
+            if (context == null) throw new ArgumentException(nameof(context));
             if (context.constraint().Length == 0) return True<T>();
             var right = context.constraint()[0].Accept(visitor);
             if (context.constraint().Length == 1) return right;
@@ -55,8 +54,8 @@ namespace Autumn.Mvc.Models.Queries
         public static Expression<Func<T, bool>> GetOrExpression<T>(
             IQueryVisitor<Expression<Func<T, bool>>> visitor, QueryParser.OrContext context)
         {
-            if (visitor == null) throw new ArgumentException("visitor");
-            if (context == null) throw new ArgumentException("context");
+            if (visitor == null) throw new ArgumentException(nameof(visitor));
+            if (context == null) throw new ArgumentException(nameof(context));
             if (context.and().Length == 0) return True<T>();
             var right = context.and()[0].Accept(visitor);
             if (context.and().Length == 1) return right;
@@ -80,8 +79,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy = null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
             if (expressionValue.Property.PropertyType.IsValueType && !(expressionValue.Property.PropertyType.IsGenericType &&
@@ -101,6 +100,14 @@ namespace Autumn.Mvc.Models.Queries
             return result;
         }
 
+        private static void CheckUniqueValue(QueryParser.ComparisonContext context)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            var value = context.arguments().value();
+            if (value.Length == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
+            if (value.Length >1) throw new QueryComparisonNotEnoughtArgumentException(context);
+        }
+
         /// <summary>
         /// create equal expression ( operator "==" or "=eq=" ) 
         /// </summary>
@@ -111,23 +118,23 @@ namespace Autumn.Mvc.Models.Queries
         /// <returns></returns>
         public static Expression<Func<T, bool>> GetEqExpression<T>(ParameterExpression parameter,
             QueryParser.ComparisonContext context,
-            NamingStrategy namingStrategy=null)
+            NamingStrategy namingStrategy = null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
-            
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
-            var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
-            if (values == null || values.Count == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
-            if (values.Count > 1) throw new QueryComparisonTooManyArgumentException(context);
 
-            var value = values[0];
-            if (expressionValue.Property.PropertyType != typeof(string))
+            CheckUniqueValue(context);
+            var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
+            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+
+            if (expressionValue.Property.PropertyType != typeof(string) || value is ExpressionValue)
                 return Expression.Lambda<Func<T, bool>>(Expression.Equal(
-                    expressionValue.Expression,
-                    Expression.Constant(value, expressionValue.Property.PropertyType)), parameter);
-            var v = ((string) value).Replace(@"\*", MaskLk);
+                    expressionValue.Expression, expression
+                    ), parameter);
+
+            var v = ((string)value).Replace(@"\*", MaskLk);
             if (v.IndexOf('*') != -1)
             {
                 return GetLkExpression<T>(parameter, context, namingStrategy);
@@ -151,6 +158,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy=null)
         {
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expression = GetEqExpression<T>(parameter, context, namingStrategy);
             var body = Expression.Not(expression.Body);
             return Expression.Lambda<Func<T, bool>>(body, parameter);
@@ -170,9 +179,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy=null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
-            
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
             if (expressionValue.Property.PropertyType == typeof(string) ||
@@ -207,9 +215,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy=null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
-            
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
             if (expressionValue.Property.PropertyType == typeof(string) ||
@@ -242,9 +249,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy=null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
-            
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
             if (expressionValue.Property.PropertyType == typeof(string) ||
@@ -276,9 +282,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy=null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
-            
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
             if (expressionValue.Property.PropertyType == typeof(string) ||
@@ -350,6 +355,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy = null)
         {
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expressionValue =
                 GetMemberExpressionValue<T>(parameter, context, namingStrategy);
             var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
@@ -373,6 +380,8 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy=null)
         {
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (context == null) throw new ArgumentException(nameof(context));
             var expression = GetInExpression<T>(parameter, context, namingStrategy);
             var body = Expression.Not(expression.Body);
             return Expression.Lambda<Func<T, bool>>(body, parameter);
@@ -386,9 +395,8 @@ namespace Autumn.Mvc.Models.Queries
             string selector,
             NamingStrategy namingStrategy = null)
         {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (selector == null) throw new ArgumentException("selector");
-
+            if (parameter == null) throw new ArgumentException(nameof(parameter));
+            if (selector == null) throw new ArgumentException(nameof(selector));
             Expression lastMember = parameter;
             PropertyInfo property = null;
             var type = typeof(T);
