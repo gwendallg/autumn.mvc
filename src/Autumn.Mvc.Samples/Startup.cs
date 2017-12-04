@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
+using Autumn.Mvc.Configurations;
+using Autumn.Mvc.Samples.Middlewares;
 
 namespace Autumn.Mvc.Samples
 {
@@ -61,7 +63,8 @@ namespace Autumn.Mvc.Samples
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseAutumn()
+            var settings = app.ApplicationServices.GetService<AutumnSettings>();
+            app
                 .UseSwagger()
                 .UseSwaggerUI(c =>
                 {
@@ -69,6 +72,7 @@ namespace Autumn.Mvc.Samples
                         string.Format("API {0}", "v1"));
 
                 })
+                .UseMiddleware<ErrorMiddleware>(settings)
                 .UseMvc();
         }
     }
