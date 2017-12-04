@@ -48,6 +48,7 @@ namespace Autumn.Mvc.Samples.Swagger
             var genericPageType = typeof(Page<>);
             var pageType = genericPageType.MakeGenericType(entityType);
             var schema = GetOrRegistrySchema(pageType, HttpMethod.Get, _autumnSettings.NamingStrategy);
+            operation.Responses.Add("500", new Response() { Schema = GetOrRegistrySchema(typeof(ErrorModel), HttpMethod.Get, _autumnSettings.NamingStrategy) });
             operation.Responses.Add("200", new Response() {Schema = schema, Description = "OK"});
             operation.Responses.Add("206", new Response() {Schema = schema, Description = "Partial Content"});
             operation.Parameters.Clear();

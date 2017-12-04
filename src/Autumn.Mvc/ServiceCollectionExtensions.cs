@@ -10,7 +10,7 @@ namespace Autumn.Mvc
 {
     public static class ServiceCollectionExtensions
     {
-    
+
         /// <summary>
         /// add autumn configuration
         /// </summary>
@@ -22,12 +22,21 @@ namespace Autumn.Mvc
 
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
-          
+
             var autumnConfigurationBuilder = new AutumnSettingsBuilder();
             autumnOptionsAction?.Invoke(autumnConfigurationBuilder);
             var settings = autumnConfigurationBuilder.Build();
             services.AddSingleton(settings);
-            
+
+            var jsonSerialisation = new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver()
+                {
+                    NamingStrategy = settings.NamingStrategy
+                }
+            };
+            services.AddSingleton(jsonSerialisation);
+
             var mvcBuilder = services.AddMvc(c =>
             {
                 c.ModelBinderProviders.Insert(0,

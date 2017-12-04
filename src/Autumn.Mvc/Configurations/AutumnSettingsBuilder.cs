@@ -4,19 +4,20 @@ using System.Text.RegularExpressions;
 using Autumn.Mvc.Configurations.Exceptions;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Autumn.Mvc.Configurations
 {
     public class AutumnSettingsBuilder
     {
         private readonly AutumnSettings _autumnSettings;
-        private readonly Dictionary<string, string> _fieldNames=new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _fieldNames = new Dictionary<string, string>();
 
         private void CkeckAndRegisterFieldName(string value, string fieldName)
         {
             if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException(nameof(value));
-            if (Regex.Match(value, @"(_)?([A-Za-z0-9]((_)?[A-Za-z0-9])*(_)?)").Value!=value)
-                throw new InvalidFormatFieldNameException(fieldName,value);
+            if (Regex.Match(value, @"(_)?([A-Za-z0-9]((_)?[A-Za-z0-9])*(_)?)").Value != value)
+                throw new InvalidFormatFieldNameException(fieldName, value);
             var check = value.Trim();
             foreach (var item in _fieldNames.Keys)
             {
@@ -57,6 +58,17 @@ namespace Autumn.Mvc.Configurations
             {
                 _autumnSettings.QueryField = _fieldNames["QueryFieldName"];
             }
+            if (_autumnSettings.NamingStrategy == null)
+            {
+                _autumnSettings.NamingStrategy = new DefaultNamingStrategy();
+            }
+            _autumnSettings.JsonSerializerSettings = new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver()
+                {
+                    NamingStrategy = _autumnSettings.NamingStrategy
+                }
+            };
             return _autumnSettings;
         }
        
