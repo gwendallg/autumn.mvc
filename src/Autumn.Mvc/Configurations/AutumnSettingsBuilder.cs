@@ -69,6 +69,16 @@ namespace Autumn.Mvc.Configurations
                     NamingStrategy = _autumnSettings.NamingStrategy
                 }
             };
+
+            if (_autumnSettings.NamingStrategy == null) return _autumnSettings;
+            _autumnSettings.PageNumberField =
+                _autumnSettings.NamingStrategy.GetPropertyName(_autumnSettings.PageNumberField, false);
+            _autumnSettings.PageSizeField =
+                _autumnSettings.NamingStrategy.GetPropertyName(_autumnSettings.PageSizeField, false);
+            _autumnSettings.SortField =
+                _autumnSettings.NamingStrategy.GetPropertyName(_autumnSettings.SortField, false);
+            _autumnSettings.QueryField =
+                _autumnSettings.NamingStrategy.GetPropertyName(_autumnSettings.QueryField, false);
             return _autumnSettings;
         }
        
