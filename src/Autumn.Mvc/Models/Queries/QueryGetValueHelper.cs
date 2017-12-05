@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices.ComTypes;
+using Autumn.Mvc.Models.Queries.Exceptions;
 
 namespace Autumn.Mvc.Models.Queries
 {
@@ -114,7 +114,6 @@ namespace Autumn.Mvc.Models.Queries
             return items;
         }
         
-        
         private static List<object> GetBooleans(QueryParser.ArgumentsContext argumentsContext)
         {
             var items = new List<object>();
@@ -211,77 +210,101 @@ namespace Autumn.Mvc.Models.Queries
         }
 
 
-        public static object GetValue<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ComparisonContext context,
-           NamingStrategy namingStrategy = null)
+        public static object GetValue<T>(ParameterExpression parameter, ExpressionValue expressionValue,
+            QueryParser.ComparisonContext context,
+            NamingStrategy namingStrategy = null)
         {
+            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+            if (expressionValue == null) throw new ArgumentNullException(nameof(expressionValue));
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            
             if (expressionValue.Property.PropertyType == typeof(string))
             {
-                return GetString<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetString<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(short) || expressionValue.Property.PropertyType == typeof(short?))
+            if (expressionValue.Property.PropertyType == typeof(short) ||
+                expressionValue.Property.PropertyType == typeof(short?))
             {
-                return GetShort<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetShort<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(int) || expressionValue.Property.PropertyType == typeof(int?))
+            if (expressionValue.Property.PropertyType == typeof(int) ||
+                expressionValue.Property.PropertyType == typeof(int?))
             {
-                return GetInt<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetInt<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(long) || expressionValue.Property.PropertyType == typeof(long?))
+            if (expressionValue.Property.PropertyType == typeof(long) ||
+                expressionValue.Property.PropertyType == typeof(long?))
             {
-                return GetLong<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetLong<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(float) || expressionValue.Property.PropertyType == typeof(float?))
+            if (expressionValue.Property.PropertyType == typeof(float) ||
+                expressionValue.Property.PropertyType == typeof(float?))
             {
-                return GetFloat<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetFloat<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(double) || expressionValue.Property.PropertyType == typeof(double?))
+            if (expressionValue.Property.PropertyType == typeof(double) ||
+                expressionValue.Property.PropertyType == typeof(double?))
             {
-                return GetDouble<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetDouble<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(decimal) || expressionValue.Property.PropertyType == typeof(decimal?))
+            if (expressionValue.Property.PropertyType == typeof(decimal) ||
+                expressionValue.Property.PropertyType == typeof(decimal?))
             {
-                return GetDecimal<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetDecimal<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(bool) || expressionValue.Property.PropertyType == typeof(bool?))
+            if (expressionValue.Property.PropertyType == typeof(bool) ||
+                expressionValue.Property.PropertyType == typeof(bool?))
             {
-                return GetBoolean<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetBoolean<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(DateTime) || expressionValue.Property.PropertyType == typeof(DateTime?))
+            if (expressionValue.Property.PropertyType == typeof(DateTime) ||
+                expressionValue.Property.PropertyType == typeof(DateTime?))
             {
-                return GetDateTime<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetDateTime<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
-            if (expressionValue.Property.PropertyType == typeof(DateTimeOffset) || expressionValue.Property.PropertyType == typeof(DateTimeOffset?))
+            if (expressionValue.Property.PropertyType == typeof(DateTimeOffset) ||
+                expressionValue.Property.PropertyType == typeof(DateTimeOffset?))
             {
-                return GetDateTimeOffset<T>(parameter, expressionValue, context.arguments().value()[0], namingStrategy);
+                return GetDateTimeOffset<T>(parameter, context.arguments().value()[0], namingStrategy);
             }
             return null;
         }
 
-        private static object GetString<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetString<T>(ParameterExpression parameter, 
+            QueryParser.ValueContext valueContext,
             NamingStrategy namingStrategy = null)
         {
             if (valueContext.single_quote() != null || valueContext.double_quote() != null)
             {
                 var replace = valueContext.single_quote() != null ? "'" : "\"";
                 var value = valueContext.GetText();
-                if (value.Length == 2) return string.Empty;
-                return value.Substring(1, value.Length - 2).Replace("\\" + replace, replace);
+                return value.Length == 2
+                    ? string.Empty
+                    : value.Substring(1, value.Length - 2).Replace("\\" + replace, replace);
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var expression))
+            {
+                return expression;
+            }
+            return valueContext.GetText();
         }
 
-
-        private static object GetShort<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetShort<T>(ParameterExpression parameter, 
+            QueryParser.ValueContext valueContext,
             NamingStrategy namingStrategy = null)
         {
             if (short.TryParse(valueContext.GetText(), out var result))
             {
                 return result;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var expression))
+            {
+                return expression;
+            }
+            throw new QueryValueInvalidConversionException(valueContext, typeof(short));
         }
 
-        private static object GetInt<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetInt<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
           NamingStrategy namingStrategy = null)
         {
             if (int.TryParse(valueContext.GetText(), out var result))
@@ -292,10 +315,10 @@ namespace Autumn.Mvc.Models.Queries
             {
                 return value;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            throw new QueryValueInvalidConversionException(valueContext, typeof(int));
         }
 
-        private static object GetLong<T>(ParameterExpression parameter, ExpressionValue expressionValue,
+        private static object GetLong<T>(ParameterExpression parameter,
             QueryParser.ValueContext valueContext,
             NamingStrategy namingStrategy = null)
         {
@@ -307,11 +330,10 @@ namespace Autumn.Mvc.Models.Queries
             {
                 return value;
             }
-            throw new FormatException(string.Format("{0} is not convertible {1}", valueContext.GetText(),
-                typeof(long).Name));
+            throw new QueryValueInvalidConversionException(valueContext, typeof(long));
         }
 
-        private static object GetFloat<T>(ParameterExpression parameter, ExpressionValue expressionValue,
+        private static object GetFloat<T>(ParameterExpression parameter,
             QueryParser.ValueContext valueContext,
             NamingStrategy namingStrategy = null)
         {
@@ -323,40 +345,52 @@ namespace Autumn.Mvc.Models.Queries
             {
                 return value;
             }
-            throw new FormatException(string.Format("{0} is not a float"));
+            throw new QueryValueInvalidConversionException(valueContext, typeof(float));
         }
 
-        private static object GetDouble<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetDouble<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
       NamingStrategy namingStrategy = null)
         {
             if (double.TryParse(valueContext.GetText(), NumberStyles.None, CultureInfo.InvariantCulture, out var result))
             {
                 return result;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+            {
+                return value;
+            }
+            throw new QueryValueInvalidConversionException(valueContext, typeof(double));
         }
 
-        private static object GetDecimal<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetDecimal<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
      NamingStrategy namingStrategy = null)
         {
             if (decimal.TryParse(valueContext.GetText(), NumberStyles.None, CultureInfo.InvariantCulture, out var result))
             {
                 return result;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+            {
+                return value;
+            }
+            throw new QueryValueInvalidConversionException(valueContext, typeof(decimal));
         }
 
-        private static object GetBoolean<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetBoolean<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
     NamingStrategy namingStrategy = null)
         {
             if (bool.TryParse(valueContext.GetText(), out var result))
             {
                 return result;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+            {
+                return value;
+            }
+            throw new QueryValueInvalidConversionException(valueContext, typeof(bool));
         }
 
-        private static object GetDateTime<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetDateTime<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
     NamingStrategy namingStrategy = null)
         {
             try
@@ -366,21 +400,29 @@ namespace Autumn.Mvc.Models.Queries
             }
             catch
             {
-                return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+                if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+                {
+                    return value;
+                }
+                throw new QueryValueInvalidConversionException(valueContext, typeof(DateTime));
             }
         }
 
-        private static object GetDateTimeOffset<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
+        private static object GetDateTimeOffset<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
     NamingStrategy namingStrategy = null)
         {
             try
             {
                 return DateTimeOffset.Parse(valueContext.GetText(), CultureInfo.InvariantCulture,
-                     DateTimeStyles.RoundtripKind);
+                    DateTimeStyles.RoundtripKind);
             }
             catch
             {
-                return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+                if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+                {
+                    return value;
+                }
+                throw new QueryValueInvalidConversionException(valueContext, typeof(DateTimeOffset));
             }
         }
 

@@ -64,13 +64,12 @@ namespace Autumn.Mvc.Models.Paginations
      
                 foreach (var sortStringValue in sortStringValues)
                 {
-                    ExpressionValue result;
-                    if (!ExpressionValue.TryParse<T>(parameter, sortStringValue, out var result,
-                        _autumnSettings.NamingStrategy))
+                    if (!ExpressionValue.TryParse<T>(parameter, sortStringValue, _autumnSettings.NamingStrategy,
+                        out var exp))
                     {
                         throw new UnknownSortException(sortStringValue);
                     }
-                    var expression = Expression.Convert(result.Expression, typeof(object));
+                    var expression = Expression.Convert(exp.Expression, typeof(object));
                     var orderExpression = Expression.Lambda<Func<T, object>>(expression, parameter);
                     var propertyKeyDirection = sortStringValue;
                     var direction = ".Dir";
