@@ -64,17 +64,12 @@ namespace Autumn.Mvc.Models.Paginations
      
                 foreach (var sortStringValue in sortStringValues)
                 {
-                    ExpressionValue expressionValue;
-                    try
+                    if (!ExpressionValue.TryParse<T>(parameter, sortStringValue, _autumnSettings.NamingStrategy,
+                        out var exp))
                     {
-                        expressionValue =
-                            QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, sortStringValue, _autumnSettings.NamingStrategy);
+                        throw new UnknownSortException(sortStringValue);
                     }
-                    catch (Exception e)
-                    {
-                        throw new UnknownSortException(sortStringValue, e);
-                    }
-                    var expression = Expression.Convert(expressionValue.Expression, typeof(object));
+                    var expression = Expression.Convert(exp.Expression, typeof(object));
                     var orderExpression = Expression.Lambda<Func<T, object>>(expression, parameter);
                     var propertyKeyDirection = sortStringValue;
                     var direction = ".Dir";
@@ -103,10 +98,18 @@ namespace Autumn.Mvc.Models.Paginations
             }
             return new Pageable<T>(pageNumber, pageSize, sort);
         }
-        
+
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            bindingContext.Result = ModelBindingResult.Success(Build(bindingContext.ActionContext.HttpContext.Request.Query));
+            try
+            {
+                bindingContext.Result =
+                    ModelBindingResult.Success(Build(bindingContext.ActionContext.HttpContext.Request.Query));
+            }
+            catch (Exception e)
+            {
+                bindingContext.ModelState.AddModelError(GetType().FullName, e.Message);
+            }
             return Task.CompletedTask;
         }
     }

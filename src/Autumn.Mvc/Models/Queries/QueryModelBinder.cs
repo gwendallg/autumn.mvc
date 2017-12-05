@@ -22,8 +22,15 @@ namespace Autumn.Mvc.Models.Queries
 
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var queryCollection = bindingContext.ActionContext.HttpContext.Request.Query;
-            bindingContext.Result = ModelBindingResult.Success(Build(queryCollection));
+            try
+            {
+                var queryCollection = bindingContext.ActionContext.HttpContext.Request.Query;
+                bindingContext.Result = ModelBindingResult.Success(Build(queryCollection));
+            }
+            catch (Exception e)
+            {
+                bindingContext.ModelState.AddModelError(GetType().FullName, e.Message);
+            }
             return Task.CompletedTask;
         }
 
