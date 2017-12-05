@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Autumn.Mvc.Models.Queries
 {
@@ -287,27 +288,42 @@ namespace Autumn.Mvc.Models.Queries
             {
                 return result;
             }
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+            {
+                return value;
+            }
             return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
         }
 
-        private static object GetLong<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
-        NamingStrategy namingStrategy = null)
+        private static object GetLong<T>(ParameterExpression parameter, ExpressionValue expressionValue,
+            QueryParser.ValueContext valueContext,
+            NamingStrategy namingStrategy = null)
         {
             if (int.TryParse(valueContext.GetText(), out var result))
             {
                 return result;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+            {
+                return value;
+            }
+            throw new FormatException(string.Format("{0} is not convertible {1}", valueContext.GetText(),
+                typeof(long).Name));
         }
 
-        private static object GetFloat<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,
-       NamingStrategy namingStrategy = null)
+        private static object GetFloat<T>(ParameterExpression parameter, ExpressionValue expressionValue,
+            QueryParser.ValueContext valueContext,
+            NamingStrategy namingStrategy = null)
         {
             if (float.TryParse(valueContext.GetText(), NumberStyles.None, CultureInfo.InvariantCulture, out var result))
             {
                 return result;
             }
-            return QueryExpressionHelper.GetMemberExpressionValue<T>(parameter, valueContext.GetText(), namingStrategy);
+            if (ExpressionValue.TryParse<T>(parameter, valueContext.GetText(), namingStrategy, out var value))
+            {
+                return value;
+            }
+            throw new FormatException(string.Format("{0} is not a float"));
         }
 
         private static object GetDouble<T>(ParameterExpression parameter, ExpressionValue expressionValue, QueryParser.ValueContext valueContext,

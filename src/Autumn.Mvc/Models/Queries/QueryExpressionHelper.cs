@@ -10,7 +10,6 @@ namespace Autumn.Mvc.Models.Queries
 {
     public static class QueryExpressionHelper
     {
-
         private static IList<Type> EqOrNeqOrInOrOutAutorizedType = new List<Type>()
         {
             typeof(string),
@@ -68,7 +67,7 @@ namespace Autumn.Mvc.Models.Queries
         }
 
         public static readonly MemoryCache QueriesCache =
-            new MemoryCache(new MemoryCacheOptions() { ExpirationScanFrequency = TimeSpan.FromMinutes(5) });
+            new MemoryCache(new MemoryCacheOptions() {ExpirationScanFrequency = TimeSpan.FromMinutes(5)});
 
         #region GetExpression 
 
@@ -132,10 +131,10 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
-            if (expressionValue.Property.PropertyType.IsValueType && !(expressionValue.Property.PropertyType.IsGenericType &&
-                expressionValue.Property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)))
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
+            if (expressionValue.Property.PropertyType.IsValueType &&
+                !(expressionValue.Property.PropertyType.IsGenericType &&
+                  expressionValue.Property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)))
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
 
             var values = QueryGetValueHelper.GetValues(typeof(bool), context.arguments());
@@ -145,7 +144,7 @@ namespace Autumn.Mvc.Models.Queries
             var result = Expression.Lambda<Func<T, bool>>(Expression.Equal(
                 expressionValue.Expression,
                 Expression.Constant(null, typeof(object))), parameter);
-            if ((bool)values[0]) return result;
+            if ((bool) values[0]) return result;
             var body = Expression.Not(result.Body);
             result = Expression.Lambda<Func<T, bool>>(body, parameter);
             return result;
@@ -173,18 +172,19 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (!EqOrNeqOrInOrOutAutorizedType.Contains(expressionValue.Property.PropertyType))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
-            CheckUniqueValue( context);
+            CheckUniqueValue(context);
             var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
-            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            var expression = (value is ExpressionValue)
+                ? ((ExpressionValue) value).Expression
+                : Expression.Constant(value, expressionValue.Property.PropertyType);
             if (value is ExpressionValue)
             {
-                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                if (((ExpressionValue) value).Property.PropertyType != expressionValue.Property.PropertyType)
                 {
                     throw new QueryComparisonInvalidMatchTypeException(context);
                 }
@@ -193,9 +193,9 @@ namespace Autumn.Mvc.Models.Queries
             if (expressionValue.Property.PropertyType != typeof(string) || value is ExpressionValue)
                 return Expression.Lambda<Func<T, bool>>(Expression.Equal(
                     expressionValue.Expression, expression
-                    ), parameter);
+                ), parameter);
 
-            var v = ((string)value).Replace(@"\*", MaskLk);
+            var v = ((string) value).Replace(@"\*", MaskLk);
             if (v.IndexOf('*') != -1)
             {
                 return GetLkExpression<T>(parameter, context, namingStrategy);
@@ -242,18 +242,19 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (!LtOrGtOrLeOrLeAutorizedType.Contains(expressionValue.Property.PropertyType))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
             CheckUniqueValue(context);
             var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
-            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            var expression = (value is ExpressionValue)
+                ? ((ExpressionValue) value).Expression
+                : Expression.Constant(value, expressionValue.Property.PropertyType);
             if (value is ExpressionValue)
             {
-                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                if (((ExpressionValue) value).Property.PropertyType != expressionValue.Property.PropertyType)
                 {
                     throw new QueryComparisonInvalidMatchTypeException(context);
                 }
@@ -279,18 +280,19 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (!LtOrGtOrLeOrLeAutorizedType.Contains(expressionValue.Property.PropertyType))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
             CheckUniqueValue(context);
             var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
-            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            var expression = (value is ExpressionValue)
+                ? ((ExpressionValue) value).Expression
+                : Expression.Constant(value, expressionValue.Property.PropertyType);
             if (value is ExpressionValue)
             {
-                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                if (((ExpressionValue) value).Property.PropertyType != expressionValue.Property.PropertyType)
                 {
                     throw new QueryComparisonInvalidMatchTypeException(context);
                 }
@@ -315,18 +317,19 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (!LtOrGtOrLeOrLeAutorizedType.Contains(expressionValue.Property.PropertyType))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
             CheckUniqueValue(context);
             var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
-            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            var expression = (value is ExpressionValue)
+                ? ((ExpressionValue) value).Expression
+                : Expression.Constant(value, expressionValue.Property.PropertyType);
             if (value is ExpressionValue)
             {
-                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                if (((ExpressionValue) value).Property.PropertyType != expressionValue.Property.PropertyType)
                 {
                     throw new QueryComparisonInvalidMatchTypeException(context);
                 }
@@ -351,18 +354,19 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (!LtOrGtOrLeOrLeAutorizedType.Contains(expressionValue.Property.PropertyType))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
             }
             CheckUniqueValue(context);
             var value = QueryGetValueHelper.GetValue<T>(parameter, expressionValue, context, namingStrategy);
-            var expression = (value is ExpressionValue) ? ((ExpressionValue)value).Expression : Expression.Constant(value, expressionValue.Property.PropertyType);
+            var expression = (value is ExpressionValue)
+                ? ((ExpressionValue) value).Expression
+                : Expression.Constant(value, expressionValue.Property.PropertyType);
             if (value is ExpressionValue)
             {
-                if (((ExpressionValue)value).Property.PropertyType != expressionValue.Property.PropertyType)
+                if (((ExpressionValue) value).Property.PropertyType != expressionValue.Property.PropertyType)
                 {
                     throw new QueryComparisonInvalidMatchTypeException(context);
                 }
@@ -381,8 +385,7 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ComparisonContext context,
             NamingStrategy namingStrategy = null)
         {
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (expressionValue.Property.PropertyType != typeof(string))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
@@ -427,8 +430,7 @@ namespace Autumn.Mvc.Models.Queries
         {
             if (parameter == null) throw new ArgumentException(nameof(parameter));
             if (context == null) throw new ArgumentException(nameof(context));
-            var expressionValue =
-                GetMemberExpressionValue<T>(parameter, context, namingStrategy);
+            var expressionValue = ExpressionValue.Parse<T>(parameter, context.selector().GetText(), namingStrategy);
             if (!EqOrNeqOrInOrOutAutorizedType.Contains(expressionValue.Property.PropertyType))
             {
                 throw new QueryComparisonInvalidComparatorSelectionException(context);
@@ -436,14 +438,14 @@ namespace Autumn.Mvc.Models.Queries
             var values = QueryGetValueHelper.GetValues(expressionValue.Property.PropertyType, context.arguments());
             if (values == null || values.Count == 0) throw new QueryComparisonNotEnoughtArgumentException(context);
 
-            var methodContainsInfo = QueryReflectionHelper.GetOrRegistryContainsMethodInfo(expressionValue.Property.PropertyType);
+            var methodContainsInfo =
+                QueryReflectionHelper.GetOrRegistryContainsMethodInfo(expressionValue.Property.PropertyType);
 
             return Expression.Lambda<Func<T, bool>>(
                 Expression.Call(Expression.Constant(methodContainsInfo.Convert(values)),
                     methodContainsInfo.ContainsMethod,
                     expressionValue.Expression), parameter);
         }
-
 
 
         /// <summary>
@@ -462,67 +464,5 @@ namespace Autumn.Mvc.Models.Queries
         }
 
         #endregion
-
-        #region GetMemberExpressionValue
-
-        public static ExpressionValue GetMemberExpressionValue<T>(ParameterExpression parameter,
-            string selector,
-            NamingStrategy namingStrategy = null)
-        {
-            if (parameter == null) throw new ArgumentException(nameof(parameter));
-            if (selector == null) throw new ArgumentException(nameof(selector));
-            Expression lastMember = parameter;
-            PropertyInfo property = null;
-            var type = typeof(T);
-            if (selector.IndexOf(".", StringComparison.InvariantCulture) != -1)
-            {
-                foreach (var item in selector.Split('.'))
-                {
-                    property = QueryReflectionHelper.GetOrRegistryProperty(type, item, namingStrategy);
-                    if (property == null)
-                    {
-                        throw new Exception(string.Format("Invalid property {0}", selector));
-                    }
-                    type = property.PropertyType;
-                    lastMember = Expression.Property(lastMember, property);
-                }
-            }
-            else
-            {
-                property = QueryReflectionHelper.GetOrRegistryProperty(type, selector, namingStrategy);
-                if (property == null)
-                {
-                    throw new Exception(string.Format("Invalid property {0}", selector));
-                }
-                lastMember = Expression.Property(lastMember, property);
-            }
-
-            return new ExpressionValue()
-            {
-                Property = property,
-                Expression = lastMember
-            };
-        }
-
-        private static ExpressionValue GetMemberExpressionValue<T>(ParameterExpression parameter,
-            QueryParser.ComparisonContext context,
-            NamingStrategy namingStrategy = null)
-        {
-            if (parameter == null) throw new ArgumentException("parameter");
-            if (context == null) throw new ArgumentException("context");
-            try
-            {
-                return GetMemberExpressionValue<T>(parameter, context.selector().GetText(), namingStrategy);
-            }
-            catch (Exception e)
-            {
-                throw new QueryComparisonInvalidComparatorSelectionException(context, e);
-            }
-        }
-
-        #endregion
-
-
-
     }
 }
