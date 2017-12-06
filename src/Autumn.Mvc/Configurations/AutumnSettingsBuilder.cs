@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Autumn.Mvc.Configurations.Exceptions;
+using Autumn.Mvc.Models.Paginations.Exceptions;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
@@ -86,13 +87,23 @@ namespace Autumn.Mvc.Configurations
         /// configuration of page size
         /// </summary>
         /// <param name="pageSizeFieldName">query parameter id for page size</param>
-        /// <param name="pageSize">default page size</param>
         /// <returns></returns>
-        public AutumnSettingsBuilder PageSizeFieldName(string pageSizeFieldName,
-            int? pageSize = null)
+        public AutumnSettingsBuilder PageSizeFieldName(string pageSizeFieldName)
         {
             
             CkeckAndRegisterFieldName(pageSizeFieldName,"PageSizeFieldName");
+            return this;
+        }
+
+        /// <summary>
+        /// configuration of page size
+        /// </summary>
+        /// <param name="pageSize">default page size</param>
+        /// <returns></returns>
+        public AutumnSettingsBuilder PageSize(int pageSize = 100)
+        {
+            if (pageSize <= 0) throw new OutOfRangePageSizeException(pageSize);
+            _autumnSettings.PageSize = pageSize;
             return this;
         }
 
