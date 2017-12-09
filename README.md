@@ -33,17 +33,17 @@ dotnet add package Autumn.Mvc
                         // snake_case
                         .NamingStrategy(new SnakeCaseNamingStrategy())
                         .HostingEnvironment(HostingEnvironment))
-... 
+		)	
 
 3. Add a new operation in your mvc controller 
+
 ...
  	[HttpGet]
-        public IActionResult Get(Expression<Func<Customer, bool>> filter,
-            IPageable<Customer> pageable)
+        public IActionResult Get(Expression<Func<[your model], bool>> filter,
+            IPageable<[your model]> pageable)
 	{
 		// your code here
 	}
-...
 
 
 See Autumn.Mvc.Samples project for samples ...
