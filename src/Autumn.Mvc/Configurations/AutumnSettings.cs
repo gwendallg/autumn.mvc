@@ -6,11 +6,11 @@ namespace Autumn.Mvc.Configurations
 {
     public class AutumnSettings
     {
-        public const string CDefaultPageSizeFieldName = "PageSize";
-        public const int CDefaultPageSize = 100;
-        public const string CDefaultPageNumberFieldName = "PageNumber";
-        public const string CDefaultQueryFieldName = "Query";
-        public const string CDefaultSortFieldName = "Sort";
+        private const string CDefaultPageSizeFieldName = "PageSize";
+        private const int CDefaultPageSize = 100;
+        private const string CDefaultPageNumberFieldName = "PageNumber";
+        private const string CDefaultQueryFieldName = "Query";
+        private const string CDefaultSortFieldName = "Sort";
 
         public string PageSizeField { get; set; }
         public string SortField { get; set; }
