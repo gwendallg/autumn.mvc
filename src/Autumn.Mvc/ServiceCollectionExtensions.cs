@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Autumn.Mvc.Configurations;
 using Autumn.Mvc.Models.Paginations;
 using Autumn.Mvc.Models.Queries;
@@ -45,7 +46,7 @@ namespace Autumn.Mvc
                     new QueryModelBinderProvider(settings));
             });
 
-           
+
 
             if (settings.NamingStrategy == null) return services;
             var contractResolver =
@@ -61,6 +62,14 @@ namespace Autumn.Mvc
 
             return services;
         }
-
+        
+        
+        public static AutumnSettings GetAutumnSettings(this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
+            var service = serviceCollection.SingleOrDefault(c =>
+                c.Lifetime == ServiceLifetime.Singleton && c.ServiceType == typeof(AutumnSettings));
+            return (AutumnSettings) service?.ImplementationInstance;
+        }
     }
 }
