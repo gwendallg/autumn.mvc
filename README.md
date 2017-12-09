@@ -49,6 +49,6 @@ dotnet add package Autumn.Mvc
 	}
 ```
 
-See Autumn.Mvc.Samples project for samples ...
-See https://github.com/jirutka/rsql-parser
-See http://tools.ietf.org/html/draft-nottingham-atompub-fiql-00
+* See Autumn.Mvc.Samples project for samples ...
+* See https://github.com/jirutka/rsql-parser
+* See http://tools.ietf.org/html/draft-nottingham-atompub-fiql-00
