@@ -19,7 +19,7 @@ dotnet add package Autumn.Mvc
 ## Quick Start
 1. Add a reference to the NuGet Autumn.Mvc package in your project.
 2. Modify Startup class in your project 
-...
+```csharp
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -33,17 +33,21 @@ dotnet add package Autumn.Mvc
                         // snake_case
                         .NamingStrategy(new SnakeCaseNamingStrategy())
                         .HostingEnvironment(HostingEnvironment))
-		)	
+		)
+         }
+```	
 
 3. Add a new operation in your mvc controller 
 
-...
- 	[HttpGet]
+```csharp
+	//
+
+ 	\[HttpGet\]
         public IActionResult Get(Expression<Func<[your model], bool>> filter,
             IPageable<[your model]> pageable)
 	{
 		// your code here
 	}
-
+```
 
 See Autumn.Mvc.Samples project for samples ...
