@@ -48,6 +48,20 @@ dotnet add package Autumn.Mvc
 		// your code here
 	}
 ```
+4. Use for filter your data
+
+Examples of RSQL expressions in both FIQL-like:
+
+* ?query=name=="Kill Bill";year=gt=2003
+* ?query=genres=in=(sci-fi,action);(director=='Christopher Nolan',actor==*Bale);year=ge=2000
+* ?query=director.lastName==Nolan;year=ge=2000;year=lt=2010
+* ?query=genres=in=(sci-fi,action);genres=out=(romance,animated,horror),director==Que*Tarantino
+
+Examples of Pagination and sort expressions :
+
+* ?pageNumber=0&pageSize=100&sort=name&name.dir=desc&sort=year&year.dir=acs
+
+## And ...
 
 * See Autumn.Mvc.Samples project for samples ...
 * See https://github.com/jirutka/rsql-parser
