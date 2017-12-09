@@ -40,9 +40,8 @@ dotnet add package Autumn.Mvc
 3. Add a new operation in your mvc controller 
 
 ```csharp
-	//
-
- 	\[HttpGet\]
+	// like Get operation
+ 	[HttpGet]
         public IActionResult Get(Expression<Func<[your model], bool>> filter,
             IPageable<[your model]> pageable)
 	{
@@ -51,3 +50,5 @@ dotnet add package Autumn.Mvc
 ```
 
 See Autumn.Mvc.Samples project for samples ...
+See https://github.com/jirutka/rsql-parser
+See http://tools.ietf.org/html/draft-nottingham-atompub-fiql-00
