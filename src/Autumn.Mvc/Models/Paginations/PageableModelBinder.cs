@@ -28,7 +28,7 @@ namespace Autumn.Mvc.Models.Paginations
             {
                 if (int.TryParse(pageSizeString[0], out pageSize))
                 {
-                    if (pageSize < 0)
+                    if (pageSize <= 0)
                     {
                         throw new OutOfRangePageSizeException(pageSize);
                     }
