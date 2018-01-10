@@ -86,19 +86,19 @@ Examples of Pagination criteria :
     - with default naming strategy
     **?PageNumber=2&PageSize=50**
     - with camel case strategy
-    **?pageNumber=2&pageSize=50**
+    **?pageNumber=2&page_size=50**
     - with snake case stategy
     **?page_number=2&page_size=50**
     
 Example of Sort criteria
 
 * sort by "name" desc
-    **?sort=name&name.dir=desc**
+    - **?sort=name&name.dir=desc**
 * sort by "id" and sort by desc year
-    **?sort=id&sort=year&year.dir=desc**
+    - **?sort=id&sort=year&year.dir=desc**
 
 ## And ...
 
-* See Autumn.Mvc.Samples project for samples ...
+* See Autumn.Mvc.Samples project for samples ( http://localhost:5000/swagger ) ...
 * See https://github.com/jirutka/rsql-parser
 * See http://tools.ietf.org/html/draft-nottingham-atompub-fiql-00
