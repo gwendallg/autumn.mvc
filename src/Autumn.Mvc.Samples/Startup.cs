@@ -41,9 +41,9 @@ namespace Autumn.Mvc.Samples
             services
                 .AddAutumn(options =>
                     options
-                        // ?query=  Query => query ( snake_case )
+                        // ?search=[RSQL query]
                         .QueryFieldName("Search")
-                        // snake_case
+                        // snake_case "Search" convert to "search"
                         .NamingStrategy(new SnakeCaseNamingStrategy())
                         .HostingEnvironment(HostingEnvironment))
                 .AddSwaggerGen(c =>

@@ -322,7 +322,7 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ValueContext valueContext,
             NamingStrategy namingStrategy = null)
         {
-            if (int.TryParse(valueContext.GetText(), out var result))
+            if (long.TryParse(valueContext.GetText(), out var result))
             {
                 return result;
             }
