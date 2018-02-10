@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 using Autumn.Mvc.Models.Queries.Exceptions;
+using System.Threading;
 
 namespace Autumn.Mvc.Models.Queries
 {
     public static class QueryGetValueHelper
     {
+        static char DecimalSeparator = Convert.ToChar(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+
         private static List<object> GetStrings(QueryParser.ArgumentsContext argumentsContext)
         {
             var items = new List<object>();
@@ -67,7 +70,7 @@ namespace Autumn.Mvc.Models.Queries
             var items = new List<object>();
             foreach (var valueContext in argumentsContext.value())
             {
-                items.Add(double.Parse(valueContext.GetText(), CultureInfo.InvariantCulture));
+                items.Add(double.Parse(valueContext.GetText().Replace('.',DecimalSeparator).Replace(',',DecimalSeparator), CultureInfo.InvariantCulture));
             }
             return items;
         }
@@ -337,7 +340,7 @@ namespace Autumn.Mvc.Models.Queries
             QueryParser.ValueContext valueContext,
             NamingStrategy namingStrategy = null)
         {
-            if (float.TryParse(valueContext.GetText(), NumberStyles.None, CultureInfo.InvariantCulture, out var result))
+            if (float.TryParse(valueContext.GetText().Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator), out var result))
             {
                 return result;
             }
@@ -351,7 +354,7 @@ namespace Autumn.Mvc.Models.Queries
         private static object GetDouble<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
       NamingStrategy namingStrategy = null)
         {
-            if (double.TryParse(valueContext.GetText(), NumberStyles.None, CultureInfo.InvariantCulture, out var result))
+            if (double.TryParse(valueContext.GetText().Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator), out var result))
             {
                 return result;
             }
@@ -365,7 +368,7 @@ namespace Autumn.Mvc.Models.Queries
         private static object GetDecimal<T>(ParameterExpression parameter, QueryParser.ValueContext valueContext,
      NamingStrategy namingStrategy = null)
         {
-            if (decimal.TryParse(valueContext.GetText(), NumberStyles.None, CultureInfo.InvariantCulture, out var result))
+            if (decimal.TryParse(valueContext.GetText().Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator), out var result))
             {
                 return result;
             }
