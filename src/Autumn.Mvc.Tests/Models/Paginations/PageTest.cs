@@ -17,8 +17,6 @@ namespace Autumn.Mvc.Tests.Models.Paginations
             Assert.False(expected.HasNext);
             Assert.Equal(expected.Number,0);
             Assert.Equal(expected.NumberOfElements,0);
-            Assert.False(expected.IsFirst);
-            Assert.False(expected.IsLast);
             Assert.Equal(expected.TotalElements,0);
             Assert.Equal(expected.TotalPages,0);
             Assert.NotNull(expected.Content);
@@ -39,8 +37,6 @@ namespace Autumn.Mvc.Tests.Models.Paginations
             Assert.Equal(expected.Number, 0);
             Assert.False(expected.HasPrevious);
             Assert.True(expected.HasNext);
-            Assert.True(expected.IsFirst);
-            Assert.False(expected.IsLast);
             Assert.Equal(expected.TotalElements, 200);
             Assert.Equal(expected.NumberOfElements, 2);
             Assert.Equal(expected.TotalPages, 100);
@@ -59,8 +55,6 @@ namespace Autumn.Mvc.Tests.Models.Paginations
             Assert.Equal(expected.Number, 199);
             Assert.True(expected.HasPrevious);
             Assert.False(expected.HasNext);
-            Assert.False(expected.IsFirst);
-            Assert.True(expected.IsLast);
             Assert.Equal(expected.TotalElements, 200);
             Assert.Equal(expected.NumberOfElements, 2);
             Assert.Equal(expected.TotalPages, 100);
@@ -81,8 +75,6 @@ namespace Autumn.Mvc.Tests.Models.Paginations
             Assert.Equal(expected.Number, 50);
             Assert.True(expected.HasPrevious);
             Assert.True(expected.HasNext);
-            Assert.False(expected.IsFirst);
-            Assert.False(expected.IsLast);
             Assert.Equal(expected.TotalElements, 200);
             Assert.Equal(expected.NumberOfElements, 2);
             Assert.Equal(expected.TotalPages, 100);

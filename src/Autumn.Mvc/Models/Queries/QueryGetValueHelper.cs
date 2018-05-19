@@ -10,7 +10,7 @@ namespace Autumn.Mvc.Models.Queries
 {
     public static class QueryGetValueHelper
     {
-        static char DecimalSeparator = Convert.ToChar(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+        static readonly char DecimalSeparator = Convert.ToChar(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
         private static List<object> GetStrings(QueryParser.ArgumentsContext argumentsContext)
         {
