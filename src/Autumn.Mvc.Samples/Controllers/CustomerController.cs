@@ -36,24 +36,29 @@ namespace Autumn.Mvc.Samples.Controllers
                     .Where(filter);
             }
 
-            if (pageable == null) return Ok(new Page<Customer>(content.ToList()));
+            if (pageable == null || content.Count() <= pageable.PageSize)
+                return Ok(new Page<Customer>(content.ToList()));
 
             if (pageable.Sort?.OrderBy?.Count() > 0)
             {
                 content = pageable.Sort.OrderBy.Aggregate(content, (current, order) => current.OrderBy(order));
             }
+
             if (pageable.Sort?.OrderDescendingBy?.Count() > 0)
             {
                 content = pageable.Sort.OrderDescendingBy.Aggregate(content,
                     (current, order) => current.OrderByDescending(order));
             }
+
             var offset = pageable.PageNumber * pageable.PageSize;
             var limit = pageable.PageSize;
             var count = content.Count();
             content = content.Skip(offset)
                 .Take(limit);
+
             return StatusCode((int) HttpStatusCode.PartialContent,
                 new Page<Customer>(content.ToList(), pageable, count));
         }
+
     }
 }
