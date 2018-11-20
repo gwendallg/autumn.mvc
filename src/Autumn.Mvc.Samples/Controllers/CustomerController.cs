@@ -7,6 +7,7 @@ using Autumn.Mvc.Models.Paginations;
 using Autumn.Mvc.Samples.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 
 namespace Autumn.Mvc.Samples.Controllers
 {
@@ -15,10 +16,12 @@ namespace Autumn.Mvc.Samples.Controllers
     {
 
         private readonly IList<Customer> _customers;
+        private readonly ILogger _logger;
 
-        public CustomerController(IList<Customer> customers)
+        public CustomerController(IList<Customer> customers, ILoggerFactory loggerFactory)
         {
             _customers = customers;
+            _logger = loggerFactory.CreateLogger("CustomerLog");
         }
 
         [HttpGet]
@@ -27,6 +30,8 @@ namespace Autumn.Mvc.Samples.Controllers
         {
             if (!ModelState.IsValid)
                 return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorModel(ModelState));
+            _logger.LogDebug(filter?.ToString());
+            
             var content = _customers
                 .AsQueryable();
 

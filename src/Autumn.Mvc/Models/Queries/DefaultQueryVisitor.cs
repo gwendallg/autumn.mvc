@@ -48,7 +48,17 @@ namespace Autumn.Mvc.Models.Queries
         /// <returns></returns>
         public override Expression<Func<T, bool>> VisitConstraint(QueryParser.ConstraintContext context)
         {
+            if (context.@group() != null)
+            {
+                return context.@group().Accept(this);
+            }
             return context.comparison() != null ? context.comparison().Accept(this) : null;
+        }
+
+
+        public override Expression<Func<T, bool>> VisitGroup(QueryParser.GroupContext context)
+        {
+            return context.or() != null ? context.or().Accept(this) : null;
         }
 
         public override Expression<Func<T, bool>> VisitErrorNode(IErrorNode node)
