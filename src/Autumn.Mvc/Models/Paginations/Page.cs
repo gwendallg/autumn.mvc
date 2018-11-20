@@ -14,14 +14,12 @@ namespace Autumn.Mvc.Models.Paginations
         public bool HasContent { get; }
         public bool HasNext { get; }
         public bool HasPrevious { get; }
-        public bool IsFirst { get; }
-        public bool IsLast { get; }
 
         public Page():this(new List<T>())
         {
             
         }
-        
+
         public Page(List<T> content, IPageable<T> pageable = null, long? total = null)
         {
             Content = content ?? new List<T>();
@@ -33,17 +31,17 @@ namespace Autumn.Mvc.Models.Paginations
             {
                 TotalElements = total.Value < (long) Content.Count ? Content.Count : total.Value;
             }
+
             HasContent = Content.Count > 0;
             if (HasContent)
             {
                 NumberOfElements = Content.Count;
             }
+
             if (pageable == null) return;
             Number = pageable.PageNumber;
-            IsFirst = pageable.PageNumber == 0;
-            HasPrevious = !IsFirst;
+            HasPrevious = pageable.PageNumber > 0;
             HasNext = TotalElements > NumberOfElements + Number * pageable.PageSize;
-            IsLast = !HasNext;
             if (TotalElements <= 0) return;
             var mod = (int) TotalElements % pageable.PageSize;
             var quo = ((int) TotalElements) - mod;

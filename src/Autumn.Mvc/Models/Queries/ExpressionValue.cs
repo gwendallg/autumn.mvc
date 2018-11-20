@@ -42,7 +42,7 @@ namespace Autumn.Mvc.Models.Queries
                     property = QueryReflectionHelper.GetOrRegistryProperty(type, item, namingStrategy);
                     if (property == null)
                     {
-                        throw new Exception(string.Format("Invalid property {0}", selector));
+                        throw new Exception($"Invalid property {selector}");
                     }
                     type = property.PropertyType;
                     lastMember = Expression.Property(lastMember, property);
@@ -53,7 +53,7 @@ namespace Autumn.Mvc.Models.Queries
                 property = QueryReflectionHelper.GetOrRegistryProperty(type, selector, namingStrategy);
                 if (property == null)
                 {
-                    throw new Exception(string.Format("Invalid property {0}", selector));
+                    throw new Exception($"Invalid property {selector}");
                 }
                 lastMember = Expression.Property(lastMember, property);
             }

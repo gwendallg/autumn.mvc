@@ -61,10 +61,10 @@ double_quote
 	
 arguments
 	:
-	'(' value ( ',' value)* ')' 
+	'{' value ( ',' value)* '}' 
 	| value 
 	;
 value	
-	: ~('('| ')'| ';'|','|'='|'<'|'>'|' '|'!'|'\''|'"')+
+	: ~('{'|'}'| '('| ')'| ';'|','|'='|'<'|'>'|' '|'!'|'\''|'"')+
 	| single_quote
 	| double_quote;

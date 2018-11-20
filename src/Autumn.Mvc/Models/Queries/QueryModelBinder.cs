@@ -39,16 +39,16 @@ namespace Autumn.Mvc.Models.Queries
             lock (QueryExpressionHelper.QueriesCache)
             {
                 if (string.IsNullOrWhiteSpace(query)) return QueryExpressionHelper.True<T>();
-                var hash = Hash(string.Format("{0}?{1}", typeof(T).FullName, query));
+                var hash = Hash($"{typeof(T).FullName}?{query}");
                 if (QueryExpressionHelper.QueriesCache.TryGetValue(hash, out Expression<Func<T, bool>> result))
                     return result;
                 var antlrInputStream = new AntlrInputStream(query);
                 var lexer = new QueryLexer(antlrInputStream);
                 var commonTokenStream = new CommonTokenStream(lexer);
                 var parser = new QueryParser(commonTokenStream);
-                var or = parser.or();
+                var eval = parser.or();
                 var visitor = new DefaultQueryVisitor<T>(autumnSettings.NamingStrategy);
-                result = visitor.VisitOr(or);
+                result = visitor.VisitOr(eval);
                 QueryExpressionHelper.QueriesCache.Set(hash, result);
                 return result;
             }

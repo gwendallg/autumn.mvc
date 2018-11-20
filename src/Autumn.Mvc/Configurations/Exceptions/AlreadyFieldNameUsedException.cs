@@ -3,7 +3,7 @@
     public class AlreadyFieldNameUsedException: OptionBuilderException
     {
         public AlreadyFieldNameUsedException(string fieldName, string value) : base(
-            string.Format("Field identifier {1} : {0} does not respect the expected format", fieldName, value))
+            string.Format("Field name {1} already used by {0}", fieldName, value))
         {
 
         }

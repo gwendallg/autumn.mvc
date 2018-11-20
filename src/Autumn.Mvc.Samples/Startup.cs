@@ -10,13 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Autumn.Mvc.Configurations;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Autumn.Mvc.Samples
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration,IHostingEnvironment hostingEnvironment)
+        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
             Configuration = configuration;
             HostingEnvironment = hostingEnvironment;
         }
@@ -55,14 +58,15 @@ namespace Autumn.Mvc.Samples
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,  ILoggerFactory loggerFactory)
         {
             if (HostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            var settings = app.ApplicationServices.GetService<AutumnSettings>();
+            loggerFactory.AddSerilog();
+
             app
                 .UseSwagger()
                 .UseSwaggerUI(c =>
